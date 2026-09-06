@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Wish — send a card they'll actually keep</title>
+<meta name="description" content="Make a free birthday wish card with photos and a message, and share it with one link. No sign-up, nothing stored on a server.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="decor-layer" id="decorLayer" aria-hidden="true"></div>
+
+<header class="site-header">
+  <a class="brand" href="#" id="brandLink">Birthday Wish</a>
+</header>
+
+<!-- ===================== COMPOSE MODE ===================== -->
+<main id="composeView" class="compose">
+
+  <section class="intro">
+    <h1>Send a birthday wish they'll actually keep</h1>
+    <p>Add three photos and a message. You'll get one link to send — they'll open a letter, flip through your photos, blow out candles, then see your card.</p>
+  </section>
+
+  <div class="builder">
+
+    <form id="wishForm" class="form-panel" novalidate>
+
+      <div class="field">
+        <label for="toName">Their name</label>
+        <input type="text" id="toName" maxlength="40" placeholder="Amara" autocomplete="off" required>
+      </div>
+
+      <div class="field">
+        <label for="fromName">Your name <span class="optional">(optional)</span></label>
+        <input type="text" id="fromName" maxlength="40" placeholder="The whole gang" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="message">Your message</label>
+        <textarea id="message" maxlength="500" rows="5" placeholder="Write what you'd actually say to them..." required></textarea>
+        <span class="char-count"><span id="charCount">0</span>/500</span>
+      </div>
+
+      <div class="field">
+        <label>Up to 3 photos — each gets its own little message</label>
+        <div class="photo-items">
+          <div class="photo-item">
+            <label class="photo-slot" for="photo0" data-slot="0">
+              <input type="file" id="photo0" accept="image/*" class="photo-input" data-index="0">
+              <span class="slot-plus">+</span>
+              <span class="slot-label">Photo 1</span>
+            </label>
+            <textarea class="caption-input" id="caption0" maxlength="150" rows="2" placeholder="Say something about this one..."></textarea>
+          </div>
+          <div class="photo-item">
+            <label class="photo-slot" for="photo1" data-slot="1">
+              <input type="file" id="photo1" accept="image/*" class="photo-input" data-index="1">
+              <span class="slot-plus">+</span>
+              <span class="slot-label">Photo 2</span>
+            </label>
+            <textarea class="caption-input" id="caption1" maxlength="150" rows="2" placeholder="Say something about this one..."></textarea>
+          </div>
+          <div class="photo-item">
+            <label class="photo-slot" for="photo2" data-slot="2">
+              <input type="file" id="photo2" accept="image/*" class="photo-input" data-index="2">
+              <span class="slot-plus">+</span>
+              <span class="slot-label">Photo 3</span>
+            </label>
+            <textarea class="caption-input" id="caption2" maxlength="150" rows="2" placeholder="Say something about this one..."></textarea>
+          </div>
+        </div>
+        <p class="hint">Photos are shrunk in your browser before they go into the link. Nothing is uploaded anywhere. A caption is optional — leave it blank if you just want the photo.</p>
+      </div>
+
+      <div class="field">
+        <label>Pick a vibe</label>
+        <div class="theme-picker" role="radiogroup" aria-label="Card color theme">
+          <button type="button" class="theme-swatch theme-pink selected" data-theme="pink" aria-pressed="true" title="Confetti pink"></button>
+          <button type="button" class="theme-swatch theme-yellow" data-theme="yellow" aria-pressed="false" title="Sunshine yellow"></button>
+          <button type="button" class="theme-swatch theme-teal" data-theme="teal" aria-pressed="false" title="Sky teal"></button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="createBtn">Create wish link</button>
+
+      <div id="linkOutput" class="link-output" hidden>
+        <p class="link-ready-title">Your wish is ready! 🎉</p>
+        <div class="link-actions">
+          <button type="button" id="copyBtn" class="btn-primary">Copy link to send</button>
+          <button type="button" id="shareBtn" class="btn-secondary" hidden>Share…</button>
+        </div>
+        <button type="button" id="toggleLinkBtn" class="link-toggle">Show full link</button>
+        <div class="link-row" id="linkRow" hidden>
+          <input type="text" id="wishLink" readonly aria-label="Wish link">
+        </div>
+        <a id="previewLink" class="preview-open" href="#" target="_blank" rel="noopener">Open it yourself to see what they'll see →</a>
+        <p id="lengthWarning" class="length-warning" hidden>This link has your photos built directly into it, so it's long — that's normal and it still works fine in WhatsApp, iMessage, and email. A few apps with strict text limits (like some SMS) might cut it off; if that happens, try smaller or fewer photos.</p>
+      </div>
+
+    </form>
+
+    <aside class="preview-panel" aria-label="Live preview">
+      <p class="preview-label">This is the final reveal — they'll also get a letter to open, your photo captions, and candles to blow out first</p>
+      <div class="wish-card" id="previewCard" data-theme="pink">
+        <div class="polaroids" id="previewPolaroids">
+          <div class="polaroid empty" data-slot="0"><span>1</span></div>
+          <div class="polaroid empty" data-slot="1"><span>2</span></div>
+          <div class="polaroid empty" data-slot="2"><span>3</span></div>
+        </div>
+        <h2 class="wish-headline" id="previewHeadline">Happy Birthday!</h2>
+        <p class="wish-message" id="previewMessage">Your message will show up here as you type.</p>
+        <p class="wish-from" id="previewFrom" hidden></p>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<!-- ===================== VIEW MODE (the actual wish, as a 4-step reveal) ===================== -->
+<main id="wishView" class="wish-view" hidden>
+
+  <!-- Step 1: envelope opens, letter slides out, then type "yes" to continue -->
+  <section class="step step-intro" id="stepIntro">
+    <h1 class="big-headline" id="introHeadline">Happy Birthday!</h1>
+
+    <div class="envelope-wrap">
+      <button type="button" class="envelope" id="envelopeBtn" aria-label="Tap to open your letter">
+        <span class="envelope-back"></span>
+        <span class="envelope-flap"></span>
+        <span class="envelope-seal">💌</span>
+      </button>
+      <p class="envelope-hint" id="envelopeHint">Tap the envelope to open your letter</p>
+      <div class="letter-card" id="letterCard" hidden>
+        <span class="letter-text" id="introMessage"></span>
+      </div>
+    </div>
+
+    <form class="yes-gate" id="yesGate" hidden>
+      <label for="yesInput">Type <strong>yes</strong> to keep going</label>
+      <div class="yes-row">
+        <input type="text" id="yesInput" autocomplete="off" placeholder="yes" aria-describedby="yesHint">
+        <button type="submit" class="btn-primary">Continue</button>
+      </div>
+      <p class="yes-hint" id="yesHint" hidden>Type "yes" to continue.</p>
+    </form>
+  </section>
+
+  <!-- Step 2: photos, one at a time, each with its own caption -->
+  <section class="step step-photos" id="stepPhotos" hidden>
+    <div class="photo-stage">
+      <img class="stage-photo" id="stagePhoto" src="" alt="">
+      <p class="stage-caption" id="stageCaption"></p>
+    </div>
+    <div class="stage-dots" id="stageDots"></div>
+    <button type="button" class="btn-primary" id="photoNextBtn">Continue</button>
+  </section>
+
+  <!-- Step 3: blow out the candles -->
+  <section class="step step-cake" id="stepCake" hidden>
+    <p class="cake-instruction" id="cakeInstruction">Blow out every candle</p>
+    <div class="cake-scene" id="cakeScene">
+      <div class="cake-sparkles" id="cakeSparkles"></div>
+      <div class="candle-row" id="candleRow"></div>
+      <div class="cake">
+        <div class="cake-icing">
+          <span class="sprinkle s1"></span><span class="sprinkle s2"></span><span class="sprinkle s3"></span>
+          <span class="sprinkle s4"></span><span class="sprinkle s5"></span><span class="sprinkle s6"></span>
+        </div>
+      </div>
+      <div class="cake-plate"></div>
+    </div>
+  </section>
+
+  <!-- Step 4: the final card -->
+  <section class="step step-final" id="stepFinal" hidden>
+    <div class="wish-card wish-card-large" id="wishCard" data-theme="pink">
+      <div class="polaroids" id="wishPolaroids"></div>
+      <h1 class="wish-headline" id="wishHeadline">Happy Birthday!</h1>
+      <p class="wish-message" id="wishMessage"></p>
+      <p class="wish-from" id="wishFrom" hidden></p>
+    </div>
+    <a href="#" id="makeYourOwn" class="make-your-own">Make your own free birthday wish →</a>
+  </section>
+
+</main>
+
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
